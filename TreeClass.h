@@ -1,18 +1,6 @@
 #pragma once
 
-class TreeNode
-{
-public:
-	TreeNode(int);
-	~TreeNode();
 
-	int key;
-	TreeNode * left;
-	TreeNode * right;
-	TreeNode * up;
-private:
-
-};
 
 class Iterator
 {
@@ -22,14 +10,26 @@ public:
 	virtual int next() = 0;
 	virtual bool has_next() = 0;
 
-protected:
-	TreeNode * current;
 };
 
 class TreeClass
 {
 
 private:
+	class TreeNode
+	{
+	public:
+		TreeNode(int);
+		~TreeNode();
+
+		int key;
+		TreeNode * left;
+		TreeNode * right;
+		TreeNode * up;
+	private:
+
+	};
+
 	class Dft_iterator : public Iterator
 	{
 	public:
@@ -37,6 +37,9 @@ private:
 		~Dft_iterator();
 		int next() override;
 		bool has_next() override;
+
+	private:
+		TreeNode * current;
 
 	};
 public:
