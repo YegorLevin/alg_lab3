@@ -132,4 +132,10 @@ int Dft_iterator::next()
 	else
 		throw out_of_range("Tree is over");
 
+	
+}
+
+Iterator * TreeClass::create_dft_iterator()
+{
+	Dft_iterator * dft_iterator = new Dft_iterator(this);
 }
