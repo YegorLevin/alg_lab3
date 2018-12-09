@@ -1,23 +1,27 @@
 #pragma once
 
 
+class TreeNode
+{
+public:
+	TreeNode(int);
+	~TreeNode();
+
+	int key;
+	TreeNode * left;
+	TreeNode * right;
+	TreeNode * up;
+private:
+
+};
+
 class TreeClass
 {
 
 private:
-	class TreeNode
-	{
-	public:
-		TreeNode(int);
-		~TreeNode();
+	
 
-		int key;
-		TreeNode * left;
-		TreeNode * right;
-		TreeNode * up;
-	private:
-
-	};
+	
 
 public:
 	TreeClass();
@@ -30,5 +34,31 @@ public:
 	//void remove(int); // удаление элемента дерева по ключу
 
 	TreeNode * head;
+
+	
 };
 
+
+class Iterator
+{
+public:
+	Iterator();
+	~Iterator();
+	virtual int next() = 0;
+	virtual bool has_next() = 0;
+
+private:
+	TreeNode * current;
+};
+
+class Dft_iterator : public Iterator
+{
+public:
+	Dft_iterator(TreeClass* tree);
+	~Dft_iterator();
+	int next() override;
+	bool has_next() override;
+
+private:
+	TreeNode * current;
+};

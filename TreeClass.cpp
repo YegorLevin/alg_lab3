@@ -54,12 +54,12 @@ void TreeClass::insert(int key) {
 	}
 }
 
-TreeClass::TreeNode::TreeNode(int key)
+TreeNode::TreeNode(int key)
 {
 	this->key = key;
 }
 
-TreeClass::TreeNode::~TreeNode()
+TreeNode::~TreeNode()
 {
 }
 
@@ -74,4 +74,55 @@ void TreeClass::print_Tree(TreeNode * p, int level)
 		cout << p->key << "<" << endl;
 		print_Tree(p->left, level + 1);
 	}
+}
+
+
+
+Iterator::Iterator()
+{
+}
+Iterator::~Iterator()
+{
+}
+
+Dft_iterator::Dft_iterator(TreeClass* tree)
+{
+	current = tree->head;
+	while ((current->left != nullptr) && (current->right != nullptr))
+	{
+		if (current->left == nullptr)
+		{
+			current = current->right;
+		}
+		else
+			current = current->left;
+	}
+}
+
+Dft_iterator::~Dft_iterator()
+{
+
+}
+
+bool Dft_iterator::has_next()
+{
+	
+}
+int Dft_iterator::next()
+{
+	if ((current->up->right != nullptr) && (current->up->right != current))
+	{
+		current = current->up->right;
+		while ((current->left != nullptr) && (current->right != nullptr))
+		{
+			if (current->left == nullptr)
+			{
+				current = current->right;
+			}
+			else
+				current = current->left;
+		}
+	}
+	else
+		current = current->up;
 }
