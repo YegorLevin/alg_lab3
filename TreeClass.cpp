@@ -98,7 +98,12 @@ TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
 		else
 			current = current->left;
 	}
-	cout << current->key;
+	//KOKOY-TO KOSTIL DLYA PERVOGO ELEMENTA
+	/*
+	current->right = new TreeNode(0);
+	current->right->up = current;
+	current = current->right;
+	*/
 }
 
 TreeClass::Dft_iterator::~Dft_iterator()
@@ -142,3 +147,4 @@ Iterator * TreeClass::create_dft_iterator()
 	Dft_iterator * dft_iterator = new Dft_iterator(this);
 	return dft_iterator;
 }
+
