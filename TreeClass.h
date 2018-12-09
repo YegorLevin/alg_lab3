@@ -7,7 +7,8 @@ class Iterator
 public:
 	Iterator();
 	~Iterator();
-	virtual int next() = 0;
+	virtual int get_key() = 0;
+	virtual void next() = 0;
 	virtual bool has_next() = 0;
 
 };
@@ -35,7 +36,8 @@ private:
 	public:
 		Dft_iterator(TreeClass* tree);
 		~Dft_iterator();
-		int next() override;
+		int get_key() override;
+		void next() override;
 		bool has_next() override;
 
 	private:
