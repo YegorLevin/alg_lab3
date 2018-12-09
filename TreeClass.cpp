@@ -54,12 +54,12 @@ void TreeClass::insert(int key) {
 	}
 }
 
-TreeNode::TreeNode(int key)
+TreeClass::TreeNode::TreeNode(int key)
 {
 	this->key = key;
 }
 
-TreeNode::~TreeNode()
+TreeClass::TreeNode::~TreeNode()
 {
 }
 
