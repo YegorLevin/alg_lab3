@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TreeClass.h"
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -106,23 +107,29 @@ Dft_iterator::~Dft_iterator()
 
 bool Dft_iterator::has_next()
 {
-	
+	return (current->up != nullptr);
 }
 int Dft_iterator::next()
 {
-	if ((current->up->right != nullptr) && (current->up->right != current))
+	if (has_next())
 	{
-		current = current->up->right;
-		while ((current->left != nullptr) && (current->right != nullptr))
+		if ((current->up->right != nullptr) && (current->up->right != current))
 		{
-			if (current->left == nullptr)
+			current = current->up->right;
+			while ((current->left != nullptr) && (current->right != nullptr))
 			{
-				current = current->right;
+				if (current->left == nullptr)
+				{
+					current = current->right;
+				}
+				else
+					current = current->left;
 			}
-			else
-				current = current->left;
 		}
+		else
+			current = current->up;
 	}
 	else
-		current = current->up;
+		throw out_of_range("Tree is over");
+
 }
