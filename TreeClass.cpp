@@ -86,7 +86,7 @@ Iterator::~Iterator()
 {
 }
 
-Dft_iterator::Dft_iterator(TreeClass* tree)
+TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
 {
 	current = tree->head;
 	while ((current->left != nullptr) && (current->right != nullptr))
@@ -98,25 +98,26 @@ Dft_iterator::Dft_iterator(TreeClass* tree)
 		else
 			current = current->left;
 	}
+	cout << current->key;
 }
 
-Dft_iterator::~Dft_iterator()
+TreeClass::Dft_iterator::~Dft_iterator()
 {
 
 }
 
-bool Dft_iterator::has_next()
+bool TreeClass::Dft_iterator::has_next()
 {
 	return (current->up != nullptr);
 }
-int Dft_iterator::next()
+int TreeClass::Dft_iterator::next()
 {
 	if (has_next())
 	{
 		if ((current->up->right != nullptr) && (current->up->right != current))
 		{
 			current = current->up->right;
-			while ((current->left != nullptr) && (current->right != nullptr))
+			while ((current->left != nullptr) || (current->right != nullptr))
 			{
 				if (current->left == nullptr)
 				{
@@ -132,10 +133,12 @@ int Dft_iterator::next()
 	else
 		throw out_of_range("Tree is over");
 
-	
+	return current->key;
 }
+
 
 Iterator * TreeClass::create_dft_iterator()
 {
 	Dft_iterator * dft_iterator = new Dft_iterator(this);
+	return dft_iterator;
 }
