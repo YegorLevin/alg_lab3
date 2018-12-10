@@ -184,8 +184,96 @@ void TreeClass::remove(int key)
 				found = 1; // если нашли нужный ключ
 			}
 		}
+
 		TreeNode* deleting_node = iterator->current;
+		if ((deleting_node->left != nullptr) && (deleting_node->right != nullptr)) // если у удаляемого есть обе подветки
+		{
+			TreeNode* left_stick = deleting_node->left;
+			TreeNode* right_stick = deleting_node->right;
+			//присоединение правой подветки 
+			if (deleting_node != head) // если удаляемый элемент не голова
+			{
+				right_stick->up = deleting_node->up; //соединяем верх правой подветки снизу вверх с верхним элементом удаляемого элемента
+				if (deleting_node->key >= deleting_node->up->key) // удаляемый элемент является правым или левым
+				{
+					deleting_node->up->right = right_stick; //делаем соединение сверху вниз				
+				}
+				else // если это левый элемент верхнего элемента
+					deleting_node->up->left = right_stick; //делаем соединение сверху вниз
+			}
+			else // если удаляемый элемент - голова
+			{
+				right_stick->up = nullptr;
+				head = right_stick; // верхушка правой подветки становится головой
+				
+
+			}
+
+				while (right_stick->left != nullptr) // находим самый левый элемент правой подветки
+				{
+					right_stick = right_stick->left;
+				}
+				right_stick->left = left_stick; //присоединяем левую подветку к этому концу правой подветки
+				left_stick->up = right_stick;
+			
+
+			
+		}
+		else if (deleting_node->left != nullptr) // если есть только левая подветка
+		{
+			if (deleting_node != head) // если удаляемый элемент не голова
+			{
+				TreeNode* left_stick = deleting_node->left;
+				left_stick->up = deleting_node->up; //привязываем левую ветку снизу вверх к верхнему элементу удаляемого 
+				if (deleting_node->key >= deleting_node->up->key) // удаляемый элемент является правым или левым
+					deleting_node->up->right = left_stick; //привязываем левую ветку сверху вниз к верхнему элементу удаляемого
+				else
+					deleting_node->up->left = left_stick; //привязываем левую ветку сверху вниз к верхнему элементу удаляемого
+			}
+			else // если удаляемый элемент - голова
+			{ 
+				head = deleting_node->left; //делаем головой верхушку этой подветки
+				deleting_node->left->up = nullptr;
+			}
+
+		}
+		else if (deleting_node->right != nullptr) // если есть только правая подветка
+		{
+			if (deleting_node != head) // если удаляемый элемент не голова
+			{
+				TreeNode* right_stick = deleting_node->right;
+				right_stick->up = deleting_node->up; //привязываем правую ветку снизу вверх к верхнему элементу удаляемого 
+				if (deleting_node->key >= deleting_node->up->key) // удаляемый элемент является правым или левым
+					deleting_node->up->right = right_stick; //привязываем правую ветку сверху вниз к верхнему элементу удаляемого
+				else
+					deleting_node->up->left = right_stick; //привязываем правую ветку сверху вниз к верхнему элементу удаляемого
+			}
+			else // если удаляемый элемент - голова
+			{
+				head = deleting_node->right;  //делаем головой верхушку этой подветки
+				deleting_node->right->up = nullptr;
+			}
+				
+			
+		}
+		else // если нет подветок
+		{
+			if (deleting_node != head) // если удаляемый элемент не голова
+			{
+				if (deleting_node->key >= deleting_node->up->key) // удаляемый элемент является правым или левым
+					deleting_node->up->right = nullptr; //удаляем к нему путь
+				else
+					deleting_node->up->left = nullptr;
+			}
+			else // если удаляемый элемент - голова
+				head = nullptr; //обнуляем указатель на голову
+		}
+					
+		delete deleting_node;
+		delete iterator;
+
 	}
 	else
 		throw out_of_range("No equal key");
+	
 }
