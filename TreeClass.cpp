@@ -56,12 +56,12 @@ void TreeClass::insert(int key) {
 	}
 }
 
-TreeClass::TreeNode::TreeNode(int key)
+TreeNode::TreeNode(int key)
 {
 	this->key = key;
 }
 
-TreeClass::TreeNode::~TreeNode()
+TreeNode::~TreeNode()
 {
 }
 
@@ -156,3 +156,36 @@ Iterator * TreeClass::create_dft_iterator()
 	return dft_iterator;
 }
 
+bool TreeClass::contains(int key)
+{
+	Iterator * iterator = create_dft_iterator(); // создание итератора в глубину (обратный)
+	bool contains = 0; // содержит ли дерево этот элемент
+	while (!contains && iterator->has_next()) // пока не нашли или не закончилось дерево
+	{
+		if (iterator->next() == key) // перемещаем итератор и сравниваем с требуемым ключом
+		{
+			contains = 1; // если нашли нужный ключ
+		}
+	}
+	return contains;
+	delete iterator;
+}
+
+void TreeClass::remove(int key)
+{
+	if (contains(key)) // если такой элемент есть в дереве
+	{
+		bool found = 0; 
+		Iterator * iterator = create_dft_iterator();
+		while (!found && iterator->has_next()) // пока не нашли или не закончилось дерево
+		{
+			if (iterator->next() == key) // перемещаем итератор и сравниваем с требуемым ключом
+			{
+				found = 1; // если нашли нужный ключ
+			}
+		}
+		TreeNode* deleting_node = iterator->current;
+	}
+	else
+		throw out_of_range("No equal key");
+}

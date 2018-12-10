@@ -1,7 +1,18 @@
-
 #pragma once
 
+class TreeNode
+{
+public:
+	TreeNode(int);
+	~TreeNode();
 
+	int key;
+	TreeNode * left;
+	TreeNode * right;
+	TreeNode * up;
+private:
+
+};
 
 	class Iterator
 	{
@@ -10,26 +21,16 @@
 		~Iterator();
 		virtual int next() = 0;
 		virtual bool has_next() = 0;
-
+		TreeNode * current;
+	protected:
+		
 	};
 
 	class TreeClass
 	{
 
 	private:
-		class TreeNode
-		{
-		public:
-			TreeNode(int);
-			~TreeNode();
-
-			int key;
-			TreeNode * left;
-			TreeNode * right;
-			TreeNode * up;
-		private:
-
-		};
+		
 
 		class Dft_iterator : public Iterator
 		{
@@ -38,9 +39,10 @@
 			~Dft_iterator();
 			int next() override;
 			bool has_next() override;
-
+			
+			
 		private:
-			TreeNode * current;
+			
 
 		};
 	public:
@@ -50,14 +52,13 @@
 
 
 	void insert(int); // добавление элемента в дерево по ключу
-	//bool contains(int); // поиск элемента в дереве по ключу
-	//void remove(int); // удаление элемента дерева по ключу
+	bool contains(int); // поиск элемента в дереве по ключу
+	void remove(int); // удаление элемента дерева по ключу
 	Iterator * create_dft_iterator(); // создание итератора, реализующего методы обхода в глубину (depth-first traverse)
 
 
 	TreeNode * head;
-
-	
+		
 };
 
 
