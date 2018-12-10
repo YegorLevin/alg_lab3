@@ -14,38 +14,39 @@ TreeClass::~TreeClass()
 }
 
 void TreeClass::insert(int key) {
-	if (head == nullptr)
+	if (head == nullptr) //если дерево пустое, создаём первый элемент
 	{
 		head = new TreeNode(key);
 	}
 	else
 	{
 		TreeNode * current = head;
+		bool end = 0; //достигли ли мы конца дерева
 
-		while (current != nullptr) {
-			if (key < current->key)
+		while (!end) { //двигаемся вниз до конца, сравнивая ключ нашего элемента с ключами в дереве
+			if (key < current->key)// если наш ключ меньше указанного ключа дерева, то спускаемся влево
 			{
 
-				if (current->left != nullptr)
+				if (current->left != nullptr) //если не конечный элемент, то спускаемся ниже
 					current = current->left;
-				else
+				else // если конечный, создаём слева от него элемент с нашим ключом 
 				{
-					current->left = new TreeNode(key);
+					current->left = new TreeNode(key); 
 					current->left->up = current;
-					break;
+					end = 1;
 				}
 
 			}
-			else
+			else // если наш ключ больше или равен указанному ключу дерева, то спускаемся вправо
 			{
 
-				if (current->right != nullptr)
+				if (current->right != nullptr) //если не конечный элемент, то спускаемся ниже
 					current = current->right;
-				else
+				else // если конечный, создаём справа от него элемент с нашим ключом
 				{
 					current->right = new TreeNode(key);
 					current->right->up = current;
-					break;
+					end = 1;
 				}
 
 
@@ -84,11 +85,12 @@ Iterator::Iterator()
 }
 Iterator::~Iterator()
 {
+	
 }
 
 TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
 {
-	current = tree->head;
+	current = tree->head; // проход к самому левому элементу дерева для начала обратного обхода в глубину
 	while ((current->left != nullptr) || (current->right != nullptr))
 	{
 		if (current->left == nullptr)
@@ -98,7 +100,13 @@ TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
 		else
 			current = current->left;
 	}
-	//KOKOY-TO KOSTIL DLYA PERVOGO ELEMENTA
+	// genialnii kostil dlya pervogo elementa
+	TreeNode * temp = new TreeNode(0);
+	temp->up = current;
+	current = temp;
+	// tolko hz kak udalit' etot temp potom
+
+	
 	/*
 	current->right = new TreeNode(0);
 	current->right->up = current;
@@ -108,21 +116,21 @@ TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
 
 TreeClass::Dft_iterator::~Dft_iterator()
 {
-
+	
 }
 
-bool TreeClass::Dft_iterator::has_next()
+bool TreeClass::Dft_iterator::has_next() 
 {
 	return (current->up != nullptr);
 }
 int TreeClass::Dft_iterator::next()
 {
-	if (has_next())
+	if (has_next()) // если есть куда идти
 	{
-		if ((current->up->right != nullptr) && (current->up->right != current))
+		if ((current->up->right != nullptr) && (current->up->right != current)) //если можно пройти на правую ветку, то проходим
 		{
 			current = current->up->right;
-			while ((current->left != nullptr) || (current->right != nullptr))
+			while ((current->left != nullptr) || (current->right != nullptr)) // идём в самый нижний элемент ветки (по возможности левый)
 			{
 				if (current->left == nullptr)
 				{
@@ -132,13 +140,13 @@ int TreeClass::Dft_iterator::next()
 					current = current->left;
 			}
 		}
-		else
+		else // если справа веток нет, поднимаемся вверх
 			current = current->up;
 	}
-	else
+	else // если обошли всё дерево
 		throw out_of_range("Tree is over");
 
-	return current->key;
+	return current->key; //возвращаем ключ элемента
 }
 
 
