@@ -11,6 +11,11 @@ TreeClass::TreeClass()
 
 TreeClass::~TreeClass()
 {
+	Iterator * iterator = create_dft_iterator();
+	while (iterator->has_next())
+	{
+		remove(iterator->next());
+	}
 }
 
 void TreeClass::insert(int key) {
