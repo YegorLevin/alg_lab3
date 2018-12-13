@@ -12,18 +12,15 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 		
 	public:
 		TreeClass * tree;
-		//Iterator * iterator;
-		//Iterator * iterator = tree->create_dft_iterator();
 		TEST_METHOD_INITIALIZE(SetUp)
 		{
 			tree = new TreeClass;
-			//Iterator * iterator = tree->create_dft_iterator();
 		}
 		TEST_METHOD_CLEANUP(CleanUp)
 		{
-			//delete tree;
-			//delete iterator;
+			delete tree;
 		}
+		
 		
 		TEST_METHOD(Dft_iterator_test_1)
 		{
@@ -128,6 +125,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
 			Assert::IsTrue(is_right);
+			delete iterator;
 		}
 		TEST_METHOD(Bft_iterator_test_oneStick)
 		{
@@ -150,6 +148,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
 			Assert::IsTrue(is_right);
+			delete iterator;
 		}
 
 		TEST_METHOD(Bft_iterator_test_2)
@@ -177,8 +176,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
 			Assert::IsTrue(is_right);
+			delete iterator;
 		}
 
+		/*
 		TEST_METHOD(iterator_noMoreElem_exception)
 		{
 			tree->insert(5);
@@ -193,6 +194,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 				Assert::IsTrue(exception == "Tree is over");
 			}
 		}
+		*/
 		TEST_METHOD(iterator_emptyTree_exception)
 		{
 			
@@ -217,29 +219,33 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 		}
 		TEST_METHOD_CLEANUP(CleanUp)
 		{
-			//delete tree;
-			//delete iterator;
+			delete tree;
 		}
 		TEST_METHOD(insert_head_test)
 		{
 			tree->insert(5);
 
-			Assert::IsTrue(tree->head->key == 5);
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 5);
+			delete iterator;
 		}
 		TEST_METHOD(insert_leftNode_test)
 		{
 			tree->insert(5);
 			tree->insert(4);
 
-			Assert::IsTrue(tree->head->key == 5 && tree->head->left->key == 4);
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 4 && iterator->next() == 5);
+			delete iterator;
 		}
 
 		TEST_METHOD(insert_rightNode_test)
 		{
 			tree->insert(5);
 			tree->insert(6);
-
-			Assert::IsTrue(tree->head->key == 5 && tree->head->right->key == 6);
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 6 && iterator->next() == 5);
+			delete iterator;
 		}
 
 		TEST_METHOD(insert_multipleTimes_test)
@@ -251,8 +257,17 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 			tree->insert(6);
 			tree->insert(7);
 
-			Assert::IsTrue(tree->head->key == 5 && tree->head->left->key == 3 && tree->head->left->right->key == 4 
-				&& tree->head->left->left->key == 1 && tree->head->right->key == 6 && tree->head->right->right->key == 7);
+			int right_result[6] = { 1,4,3,7,6,5 };
+			bool is_right = 1;
+			Iterator * iterator = tree->create_dft_iterator();
+			for (int i = 0; iterator->has_next(), i < 6; i++)
+			{
+				if (iterator->next() != right_result[i])
+					is_right = 0;
+			}
+
+			Assert::IsTrue(is_right);
+			delete iterator;
 		}
 		TEST_METHOD(contains_oneNode)
 		{
@@ -283,15 +298,23 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 			tree->insert(5);
 			tree->remove(5);
 
-			Assert::IsTrue(tree->head == nullptr);
+			Assert::IsTrue(tree->is_empty());
 		}
+		/*
+		когда после этого теста вызывается делете трее, то вот эта ошибка вылетает, а в предыдущих тестах нормально удаляется
+		
+		*/
+
 		TEST_METHOD(remove_leftLeaf)
 		{
 			tree->insert(5);
 			tree->insert(4);
 			tree->remove(4);
 
-			Assert::IsTrue(tree->head->left == nullptr);
+			Iterator * iterator = tree->create_dft_iterator();
+		
+			Assert::IsTrue(iterator->next() == 5);
+			delete iterator;
 		}
 		TEST_METHOD(remove_rightLeaf)
 		{
@@ -299,7 +322,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 			tree->insert(6);
 			tree->remove(6);
 
-			Assert::IsTrue(tree->head->right == nullptr);
+			Iterator * iterator = tree->create_dft_iterator();
+
+			Assert::IsTrue(iterator->next() == 5);
+			delete iterator;
 		}
 		TEST_METHOD(remove_Node)
 		{
@@ -323,8 +349,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 					is_right = 0;
 			}
 
-			Assert::IsTrue(tree->head->left->key == 5 && is_right && tree->head->left->left->left->key == 2 
-				&& tree->head->left->left->left->up == tree->head->left->left);
+			Assert::IsTrue(is_right);
 		}
 		TEST_METHOD(remove_HeadNode)
 		{
@@ -348,7 +373,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 					is_right = 0;
 			}
 
-			Assert::IsTrue(tree->head->key == 13 &&tree->head->left->left->key == 3 && is_right && tree->head->left->left->up == tree->head->left);
+			Assert::IsTrue(is_right);
 		}
 		TEST_METHOD(remove_oneLeftStick)
 		{
@@ -357,7 +382,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 			tree->insert(3);
 
 			tree->remove(4);
-			Assert::IsTrue(tree->head->left->key == 3 && tree->head->left->up == tree->head);
+
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 3 && iterator->next() == 5);
+			delete iterator;
 		}
 
 		TEST_METHOD(remove_oneRightStick)
@@ -367,10 +395,38 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 			tree->insert(7);
 
 			tree->remove(6);
-			Assert::IsTrue(tree->head->right->key == 7 && tree->head->right->up == tree->head);
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 7 && iterator->next() == 5);
+			delete iterator;
 		}
 		
-		TEST_METHOD(remove_ElemDoesntExist_exception)
+		TEST_METHOD(remove_multipleNodes)
+		{
+			tree->insert(5);
+			tree->insert(6);
+			tree->insert(6);
+			tree->insert(6);
+
+			tree->remove(6);
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 5);
+			delete iterator;
+		}
+
+
+		TEST_METHOD(remove_multipleNodes_inDifferentPositions)
+		{
+			tree->insert(5);
+			tree->insert(6);
+			tree->insert(7);
+			tree->insert(8);
+			tree->insert(6);
+			tree->remove(6);
+			Iterator * iterator = tree->create_dft_iterator();
+			Assert::IsTrue(iterator->next() == 8 && iterator->next() == 7 && iterator->next() == 5);
+			delete iterator;
+		}
+		/*TEST_METHOD(remove_ElemDoesntExist_exception)
 		{
 			tree->insert(5);
 			try
@@ -381,5 +437,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 			{
 				Assert::IsTrue(exception == "No equal key");
 			}
-		}
+		}*/
+
 	};

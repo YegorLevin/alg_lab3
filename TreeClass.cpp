@@ -12,18 +12,26 @@ TreeClass::TreeClass()
 
 TreeClass::~TreeClass()
 {
-	Iterator * iterator = create_dft_iterator();
+	if (!is_empty())
+	{
+		Iterator * iterator = create_dft_iterator();
+		TreeNode * before;
 	while (iterator->has_next())
 	{
-		remove(iterator->next());
+		before = iterator->current;
+		iterator->next();
+		delete before;
 	}
+	delete iterator;
+	}
+	
 }
 
 void TreeClass::insert(int key) {
 	if (head == nullptr) //если дерево пустое, создаём первый элемент
 	{
 		head = new TreeNode(key);
-		head->order_num = 0;
+
 	}
 	else
 	{
@@ -70,6 +78,9 @@ TreeNode::TreeNode(int key)
 
 TreeNode::~TreeNode()
 {
+	left = nullptr;
+	right = nullptr;
+	up = nullptr;
 }
 
 
@@ -91,8 +102,7 @@ Iterator::Iterator()
 {
 }
 Iterator::~Iterator()
-{
-	
+{	
 }
 
 TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
@@ -113,11 +123,13 @@ TreeClass::Dft_iterator::Dft_iterator(TreeClass* tree)
 		else
 			current = current->left;
 	}
+	// вспомогательный элемент, чтобы первый вызов has_next() возвращал первый элемент итератора
 	
+	/*
 	TreeNode * temp = new TreeNode(0);
 	temp->up = current;
 	current = temp;
-
+	*/
 	}
 }
 
@@ -128,12 +140,14 @@ TreeClass::Dft_iterator::~Dft_iterator()
 
 bool TreeClass::Dft_iterator::has_next() 
 {
-	return (current->up != nullptr);
+	return (current != nullptr);
 }
 int TreeClass::Dft_iterator::next()
 {
-	if (has_next()) // если есть куда идти
+	int key = current->key;
+	if (current->up) // если есть куда идти
 	{
+
 		if ((current->up->right != nullptr) && (current->up->right != current)) //если можно пройти на правую ветку, то проходим
 		{
 			current = current->up->right;
@@ -151,9 +165,10 @@ int TreeClass::Dft_iterator::next()
 			current = current->up;
 	}
 	else // если обошли всё дерево
-		throw "Tree is over";
+		//throw "Tree is over";
+		current = nullptr;
 
-	return current->key; //возвращаем ключ элемента
+	return key; //возвращаем ключ элемента
 }
 
 
@@ -163,12 +178,14 @@ Iterator * TreeClass::create_dft_iterator()
 	return dft_iterator;
 }
 
+
 bool TreeClass::contains(int key)
 {
 	Iterator * iterator = create_dft_iterator(); // создание итератора в глубину (обратный)
 	bool contains = 0; // содержит ли дерево этот элемент
 	while (!contains && iterator->has_next()) // пока не нашли или не закончилось дерево
 	{
+
 		if (iterator->next() == key) // перемещаем итератор и сравниваем с требуемым ключом
 		{
 			contains = 1; // если нашли нужный ключ
@@ -177,19 +194,25 @@ bool TreeClass::contains(int key)
 	return contains;
 	delete iterator;
 }
+/*
+там же итератор в глубину и он всегда только листья удаляет и не перестраивает дерево
+*/
 
 void TreeClass::remove(int key)
 {
-	if (contains(key)) // если такой элемент есть в дереве
+	
+	while (!is_empty()&&contains(key)) // если такой элемент есть в дереве
 	{
 		bool found = 0; 
 		Iterator * iterator = create_dft_iterator();
-		while (!found && iterator->has_next()) // пока не нашли или не закончилось дерево
+		while (iterator->has_next()) // пока не нашли или не закончилось дерево
 		{
-			if (iterator->next() == key) // перемещаем итератор и сравниваем с требуемым ключом
+			
+			if (iterator->current->key == key) // перемещаем итератор и сравниваем с требуемым ключом
 			{
-				found = 1; // если нашли нужный ключ
+				break; // если нашли нужный ключ
 			}
+			iterator->next();
 		}
 
 		TreeNode* deleting_node = iterator->current;
@@ -278,74 +301,96 @@ void TreeClass::remove(int key)
 					
 		delete deleting_node;
 		delete iterator;
-
+		/*if (contains(key))
+			remove(key);*/
 	}
-	else
-		throw "No equal key";
+	/*else
+		throw "No equal key";*/
 	
 }
 
-Iterator * TreeClass::create_bft_iterator()
-{
-	Bft_iterator * bft_iterator = new Bft_iterator(this);
-	return bft_iterator;
-}
 
 //Конструктор элемента очереди
-List::ListNode::ListNode(TreeNode *node) {
+Queue::QueueNode::QueueNode(TreeNode *node) {
 	tree_node = node;
 	next = nullptr;
 }
+//Деструктор элемента очереди
+Queue::QueueNode::~QueueNode() {
+	tree_node = nullptr;
+	next = nullptr;
+}
 //Конструктор очереди
-List::List(TreeNode *node) {
-	tail = head = new ListNode(node);
-	size = 1;
+//Queue::Queue(TreeNode *node) {
+//	tail = head = new QueueNode(node);
+//	size = 1;
+//}
+//Конструктор пустой очереди
+Queue::Queue() {
+	tail = head = nullptr;
+}
+//Деструктор очереди
+Queue::~Queue() {
+	while (tail) {
+		this->pop_front();
+	}
 }
 //Добавление элемента в конец очереди
-void List::push_back(TreeNode *node) {
+void Queue::push_back(TreeNode *node) {
 	if (head == nullptr)
-		head = tail = new ListNode(node);
+		head = tail = new QueueNode(node);
 	else {
-		tail->next = new ListNode(node);
+		tail->next = new QueueNode(node);
 		tail = tail->next;
 	}
-	size++;
 }
 //Удаление элемента с начала очереди
-TreeNode* List::pop_front() {
+TreeNode* Queue::pop_front() {
 	TreeNode* temp = head->tree_node;
 	head = head->next;
-	if (head == nullptr) tail = nullptr;
-
-	size--;
+	if (head == nullptr)
+		tail = nullptr;
 	return temp;
 }
-//Конструктор итератора для обхода в ширину
+//Создание итератора для обхода в ширину
+Iterator* TreeClass::create_bft_iterator() {
+	Bft_iterator * bft_iterator = new Bft_iterator(this);
+	return bft_iterator;
+}
+//Конструктор итератора обхода в ширину
 TreeClass::Bft_iterator::Bft_iterator(TreeClass *tree) {
-	List* tree_node_list = new List(tree->head); //Создание очереди
-	keys_bft = (int*)malloc(sizeof(int)); //Создание массива ключей
-	size_of_keys_bft = 0;
-	i_of_keys_bft = 0;
-
-	while (tree_node_list->size != 0) {
-		TreeNode* temp = tree_node_list->pop_front(); //Удаление и получение первого элемента в очереди
-		keys_bft = (int*)realloc(keys_bft, (++size_of_keys_bft) * sizeof(int)); //Изменение размера массива ключей
-		keys_bft[size_of_keys_bft - 1] = temp->key; //Добавление ключа элемента в массив
-		if (temp->left) {
-			tree_node_list->push_back(temp->left); //Добавление в очередь левого потомка, елси он есть
-		}
-		if (temp->right) {
-			tree_node_list->push_back(temp->right); //Добавление в очередь правого потомка, елси он есть
-		}
-	}
-	delete tree_node_list;
+	current = tree->head;
+	tree_Queue->push_back(current);
 }
-
-//Переход к следующему элементу
+//Деструктор итератора обхода в ширину
+TreeClass::Bft_iterator::~Bft_iterator() {
+	current = nullptr;
+	delete tree_Queue;
+	tree_Queue = nullptr;
+}
+//Переопределенная функция перехода к следующему элементу
 int TreeClass::Bft_iterator::next() {
-	return keys_bft[i_of_keys_bft++];
+	if (!has_next()) { //
+		throw out_of_range("The next element does not exist!");
+	}
+	int key = current->key; //Получение ключа текущего узла
+	if (current->left)
+		tree_Queue->push_back(current->left); //Добавление в очередь левого потомка текущего узла
+	if (current->right)
+		tree_Queue->push_back(current->right); //Добавление в очередь правого потомка текущего узла
+	if (tree_Queue->head->next)
+		current = tree_Queue->head->next->tree_node; //Переход к следующему элементу в очереди
+	else
+		current = nullptr;
+	tree_Queue->pop_front(); //Удаление элемента из очереди
+	return key;
 }
-//Проверка наличия следующего элемента
+
 bool TreeClass::Bft_iterator::has_next() {
-	return i_of_keys_bft != size_of_keys_bft - 1;
+	return current != nullptr;
+}
+
+bool TreeClass::is_empty()
+{
+	return head == nullptr;
 }
