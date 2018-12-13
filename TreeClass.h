@@ -3,6 +3,7 @@
 #include"Iterator.h"
 #include "QueueClass.h"	
 
+
 	
 	class TreeClass
 	{
@@ -38,6 +39,9 @@
 		TreeNode * head;
 
 	public:
+		
+		friend void Tree_Sort(int* arr, int arr_size); //Сортировка массива с помощью бинарного дерева поиска
+
 		TreeClass();
 		~TreeClass();
 		void print_Tree(TreeNode * p, int level = 0);

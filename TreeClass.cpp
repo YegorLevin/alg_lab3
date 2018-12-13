@@ -394,3 +394,8 @@ bool TreeClass::is_empty()
 {
 	return head == nullptr;
 }
+
+int TreeNode::get_key()
+{
+	return key;
+}
